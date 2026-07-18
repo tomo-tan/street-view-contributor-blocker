@@ -1,5 +1,7 @@
 # Street View Contributor Blocker for Google Maps
 
+> **このスクリプトは、Googleマップ上の投稿を削除・通報するものではありません。** 指定した投稿者のストリートビュー／360度画像を、このブラウザ内でのみ非表示にします。投稿者への通知や外部へのブロックリスト送信はありません。
+
 Block Street View and Photo Sphere imagery from selected Google Maps contributors without affecting Google-owned Street View imagery.
 
 Google Maps currently has no native per-contributor blocklist for imagery. This userscript adds one locally in your browser.
