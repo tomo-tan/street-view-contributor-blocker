@@ -27,6 +27,26 @@ Google Maps currently has no native per-contributor blocklist for imagery. This 
 
 On Android, Firefox + Violentmonkey or Edge Canary + Violentmonkey can be used. The Google Maps native app cannot run userscripts.
 
+## Note: How to use
+
+### Block from an open 360-degree panorama
+
+1. Open the contributor's 360-degree image in panorama view on Google Maps.
+2. Select **Block this contributor** in the lower-left corner.
+
+This button is not shown on contributor profile pages, photo lists, or store pages. Open the 360-degree image itself instead of leaving it in the photo list.
+
+### Add a contributor using their profile URL
+
+1. Open the contributor's Google Maps profile and copy its URL from the browser's address bar.
+2. Select **SV Contributor Blocker** in the lower-left corner.
+3. Paste the copied URL into **Contributor ID or profile URL**.
+4. Optionally enter the contributor's name in **Display name (optional)**, then select **Add**.
+
+If the red message “Enter a contributor ID or profile URL” appears, the first field is empty or the script could not extract a contributor ID from the entered value. A display name alone cannot be registered.
+
+To unblock a contributor, open **SV Contributor Blocker** and select **Remove** next to the saved contributor.
+
 ## How blocking works
 
 When imagery belongs to a blocked contributor, the script exits Street View and returns to the normal map at the same coordinates. It does not delete or report anyone's content, and the blocklist never leaves the browser/userscript manager.
