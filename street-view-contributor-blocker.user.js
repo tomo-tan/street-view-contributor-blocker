@@ -2,10 +2,10 @@
 // @name         Street View Contributor Blocker for Google Maps
 // @name:ja      Googleマップ Street View 投稿者ブロッカー
 // @namespace    https://github.com/tomo-tan/street-view-contributor-blocker
-// @version      0.1.2
+// @version      0.1.3
 // @description  Block Street View and Photo Sphere imagery from selected Google Maps contributors.
 // @description:ja Googleマップで指定した投稿者のストリートビュー／360度画像だけを非表示にします。
-// @author       TOMO
+// @author       tomo-tan
 // @license      MIT
 // @homepageURL  https://github.com/tomo-tan/street-view-contributor-blocker
 // @supportURL   https://github.com/tomo-tan/street-view-contributor-blocker/issues
