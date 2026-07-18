@@ -2,7 +2,7 @@
 // @name         Street View Contributor Blocker for Google Maps
 // @name:ja      Googleマップ Street View 投稿者ブロッカー
 // @namespace    https://github.com/tomo-tan/street-view-contributor-blocker
-// @version      0.1.3
+// @version      0.2.0
 // @description  Block Street View and Photo Sphere imagery from selected Google Maps contributors.
 // @description:ja Googleマップで指定した投稿者のストリートビュー／360度画像だけを非表示にします。
 // @author       tomo-tan
@@ -25,6 +25,8 @@
   const STORAGE_KEY = "streetViewContributorBlocker.blockedContributors.v1";
   const UI_ID = "svcb-root";
   const CHECK_INTERVAL_MS = 300;
+  const MUTATION_DEBOUNCE_MS = 200;
+  const TOAST_VISIBLE_MS = 5000;
   const isJapanese = /^ja\b/i.test(navigator.language || "");
 
   const t = isJapanese
@@ -63,6 +65,8 @@
 
   let handling = false;
   let currentContributor = null;
+  let mutationTimer = null;
+  let toastHideTimer = null;
 
   function loadBlocked() {
     try {
@@ -102,16 +106,20 @@
       const id = contributorIdFrom(link.getAttribute("href"));
       if (!id) continue;
       const name = (link.textContent || "").trim()
-        || (document.querySelector("h1")?.textContent || "").trim()
-        || document.title.split(/\s[-–—]\s/)[0].trim();
+        || (link.getAttribute("aria-label") || "").trim()
+        || (link.querySelector("img[alt]")?.getAttribute("alt") || "").trim();
       return { id, name };
     }
     return null;
   }
 
-  function isGoogleOwnedImagery() {
-    return /!2e0(?:!|$)/.test(location.href)
-      || location.href.includes("streetviewpixels-pa.googleapis.com");
+  function isPanoramaOpen() {
+    return /\/maps\/[^?]*@-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?,3a,/.test(location.pathname);
+  }
+
+  function isGoogleOwnedPanorama() {
+    // In a panorama URL, !2e0 identifies Google-owned Street View imagery.
+    return /!2e0(?:!|$)/.test(location.href);
   }
 
   function mapUrlAtCurrentLocation() {
@@ -150,6 +158,11 @@
     }
     toast.textContent = message;
     toast.style.display = "block";
+    if (toastHideTimer !== null) window.clearTimeout(toastHideTimer);
+    toastHideTimer = window.setTimeout(() => {
+      toast.style.display = "none";
+      toastHideTimer = null;
+    }, TOAST_VISIBLE_MS);
   }
 
   function ensureUi() {
@@ -271,16 +284,24 @@
     const button = document.querySelector("#svcb-current");
     if (!button) return;
     const isBlocked = contributor && loadBlocked().some((item) => item.id === contributor.id);
-    button.style.display = contributor && !isBlocked && !isGoogleOwnedImagery() ? "block" : "none";
+    button.style.display = isPanoramaOpen() && contributor && !isBlocked && !isGoogleOwnedPanorama()
+      ? "block"
+      : "none";
     if (contributor) button.textContent = `${t.block}: ${contributor.name || contributor.id}`;
   }
 
   function checkPage() {
     ensureUi();
+    if (!isPanoramaOpen()) {
+      currentContributor = null;
+      updateCurrentButton(null);
+      return;
+    }
+
     currentContributor = detectContributor();
     updateCurrentButton(currentContributor);
 
-    if (handling || !currentContributor || isGoogleOwnedImagery()) return;
+    if (handling || !currentContributor || isGoogleOwnedPanorama()) return;
     const blocked = loadBlocked().some((item) => item.id === currentContributor.id);
     if (!blocked) return;
 
@@ -291,12 +312,20 @@
 
   function start() {
     ensureUi();
-    new MutationObserver(checkPage).observe(document.documentElement, { childList: true, subtree: true });
+    new MutationObserver(() => {
+      if (mutationTimer !== null) window.clearTimeout(mutationTimer);
+      mutationTimer = window.setTimeout(() => {
+        mutationTimer = null;
+        checkPage();
+      }, MUTATION_DEBOUNCE_MS);
+    }).observe(document.documentElement, { childList: true, subtree: true });
     checkPage();
     window.setInterval(checkPage, CHECK_INTERVAL_MS);
     if (typeof GM_registerMenuCommand === "function") {
       GM_registerMenuCommand(t.manage, openPanel);
-      GM_registerMenuCommand(t.block, () => currentContributor && addBlocked(currentContributor));
+      GM_registerMenuCommand(t.block, () => {
+        if (isPanoramaOpen() && currentContributor) addBlocked(currentContributor);
+      });
     }
   }
 
