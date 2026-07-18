@@ -18,7 +18,7 @@ Google Maps currently has no native per-contributor blocklist for imagery. This 
 ## Install
 
 1. Install Tampermonkey or Violentmonkey.
-2. Import `street-view-contributor-blocker.user.js`.
+2. [Install the script from Greasy Fork](https://greasyfork.org/scripts/587491-street-view-contributor-blocker-for-google-maps).
 3. Open Google Maps in the browser.
 4. Open user-contributed Street View/360 imagery.
 5. Choose **Block this contributor** in the lower-left corner.
@@ -49,7 +49,7 @@ MIT
 Googleマップで指定した投稿者のストリートビュー／360度画像だけをローカルにブロックします。Google撮影の公式ストリートビューには影響しません。
 
 1. TampermonkeyまたはViolentmonkeyをインストールします。
-2. `street-view-contributor-blocker.user.js` をインポートします。
+2. [Greasy Forkからスクリプトをインストールします](https://greasyfork.org/ja/scripts/587491-street-view-contributor-blocker-for-google-maps)。
 3. Googleマップで対象投稿者の360度画像を開きます。
 4. 左下の「この投稿者をブロック」を押します。
 
